@@ -37,7 +37,7 @@ if not st.session_state.logueado:
                 st.session_state.logueado = True
                 st.session_state.usuario = username
                 st.success(f"Sesión iniciada como **{username}**")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("❌ Contraseña incorrecta")
         else:
