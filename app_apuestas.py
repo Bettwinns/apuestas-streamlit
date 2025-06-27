@@ -149,6 +149,7 @@ else:
                 st.rerun()
 
         if st.session_state.logueado:
+            
     st.subheader("✏️ Gestionar resultados")
 
     for idx, row in df[df["Usuario"] == session_user].iterrows():
