@@ -149,59 +149,58 @@ else:
                 st.rerun()
 
         if st.session_state.logueado:
-# Sustituir TODO el bloque de "✏️ Gestionar resultados" por esto:
-st.subheader("✏️ Gestionar resultados")
+    st.subheader("✏️ Gestionar resultados")
 
-for idx, row in df[df["Usuario"] == session_user].iterrows():
-    with st.expander(f"{row['Fecha']} - {row['Evento']} ({row['Tipo de Apuesta']})"):
-        pronos = ast.literal_eval(row["Pronósticos"])
-        cuotas = ast.literal_eval(row["Cuotas Individuales"])
-        resultados_previos = ast.literal_eval(row["Resultados Pronósticos"]) if row["Resultados Pronósticos"] else ["Pendiente"]*len(pronos)
+    for idx, row in df[df["Usuario"] == session_user].iterrows():
+        with st.expander(f"{row['Fecha']} - {row['Evento']} ({row['Tipo de Apuesta']})"):
+            pronos = ast.literal_eval(row["Pronósticos"])
+            cuotas = ast.literal_eval(row["Cuotas Individuales"])
+            resultados_previos = ast.literal_eval(row["Resultados Pronósticos"]) if row["Resultados Pronósticos"] else ["Pendiente"]*len(pronos)
 
-        with st.form(f"form_update_{idx}"):
-            resultados_pronos = []
-            for i, p in enumerate(pronos):
-                res = st.selectbox(
-                    f"Resultado pronóstico {i+1} ({p})",
-                    ["Pendiente", "Ganado", "Perdido", "Nulo"],
-                    index=["Pendiente", "Ganado", "Perdido", "Nulo"].index(resultados_previos[i]),
-                    key=f"res_{idx}_{i}"
-                )
-                resultados_pronos.append(res)
+            with st.form(f"form_update_{idx}"):
+                resultados_pronos = []
+                for i, p in enumerate(pronos):
+                    res = st.selectbox(
+                        f"Resultado pronóstico {i+1} ({p})",
+                        ["Pendiente", "Ganado", "Perdido", "Nulo"],
+                        index=["Pendiente", "Ganado", "Perdido", "Nulo"].index(resultados_previos[i]),
+                        key=f"res_{idx}_{i}"
+                    )
+                    resultados_pronos.append(res)
 
-            actualizar = st.form_submit_button("Actualizar combinada")
+                actualizar = st.form_submit_button("Actualizar combinada")
 
-            if actualizar:
-                df.at[idx, "Resultados Pronósticos"] = str(resultados_pronos)
+                if actualizar:
+                    df.at[idx, "Resultados Pronósticos"] = str(resultados_pronos)
 
-                if "Perdido" in resultados_pronos:
-                    final = "Perdida"
-                    ganancia = -row["Stake (€)"]
-                else:
-                    ganados = [c for c, r in zip(cuotas, resultados_pronos) if r == "Ganado"]
-                    nulos = [r for r in resultados_pronos if r == "Nulo"]
-                    if not ganados and nulos:
-                        final = "Nula"
-                        ganancia = 0
-                    elif ganados:
-                        nueva_cuota = 1
-                        for c, r in zip(cuotas, resultados_pronos):
-                            if r == "Ganado":
-                                nueva_cuota *= c
-                        final = "Ganada"
-                        ganancia = round(row["Stake (€)"] * (nueva_cuota - 1), 2)
+                    if "Perdido" in resultados_pronos:
+                        final = "Perdida"
+                        ganancia = -row["Stake (€)"]
                     else:
-                        final = "Nula"
-                        ganancia = 0
+                        ganados = [c for c, r in zip(cuotas, resultados_pronos) if r == "Ganado"]
+                        nulos = [r for r in resultados_pronos if r == "Nulo"]
+                        if not ganados and nulos:
+                            final = "Nula"
+                            ganancia = 0
+                        elif ganados:
+                            nueva_cuota = 1
+                            for c, r in zip(cuotas, resultados_pronos):
+                                if r == "Ganado":
+                                    nueva_cuota *= c
+                            final = "Ganada"
+                            ganancia = round(row["Stake (€)"] * (nueva_cuota - 1), 2)
+                        else:
+                            final = "Nula"
+                            ganancia = 0
 
-                nuevo_bank = row["Bank (€)"] + ganancia
-                df.at[idx, "Resultado"] = final
-                df.at[idx, "Ganancia/Pérdida (€)"] = ganancia
-                df.at[idx, "Bank (€)"] = nuevo_bank
+                    nuevo_bank = row["Bank (€)"] + ganancia
+                    df.at[idx, "Resultado"] = final
+                    df.at[idx, "Ganancia/Pérdida (€)"] = ganancia
+                    df.at[idx, "Bank (€)"] = nuevo_bank
 
-                df.to_csv(DATA_FILE, index=False)
-                st.success(f"✅ Combinada actualizada como {final}")
-                st.rerun()
+                    df.to_csv(DATA_FILE, index=False)
+                    st.success(f"✅ Combinada actualizada como {final}")
+                    st.rerun()
 
         if row['Resultado'] == "Pendiente":
             if st.button("🗑️ Eliminar apuesta", key=f"del_{idx}"):
@@ -209,3 +208,4 @@ for idx, row in df[df["Usuario"] == session_user].iterrows():
                 df.to_csv(DATA_FILE, index=False)
                 st.warning("Apuesta eliminada")
                 st.rerun()
+
