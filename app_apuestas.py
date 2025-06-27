@@ -114,26 +114,26 @@ else:
             st.markdown(f"💰 <b>Importe a apostar: {stake_estimado} €</b>", unsafe_allow_html=True)
             st.markdown(f"🎯 <b>Cuota total: {round(cuota_total, 2)}</b>", unsafe_allow_html=True)
 
-            enviar = st.form_submit_button("Añadir Apuesta")
+enviar = st.form_submit_button("Añadir Apuesta")
 
-        if enviar:
-            nueva = {
-                "Usuario": session_user,
-                "Fecha": fecha,
-                "Evento": evento,
-                "Competición": competicion,
-                "Deporte": deporte,
-                "Tipo de Apuesta": st.session_state["tipo_apuesta"],
-                "Pronósticos": str(pronosticos),
-                "Cuotas Individuales": str(cuotas_individuales),
-                "Cuota Total": cuota_total,
-                "Stake (1-10)": stake,
-                "Stake (€)": stake_estimado,
-                "Resultado": "Pendiente",
-                "Ganancia/Pérdida (€)": 0,
-                "Bank (€)": bank_anterior
-            }
-            df = pd.concat([df, pd.DataFrame([nueva])], ignore_index=True)
-            df.to_csv(DATA_FILE, index=False)
-            st.success("✅ Apuesta registrada correctamente")
-            st.rerun()
+if enviar:
+    nueva = {
+        "Usuario": session_user,
+        "Fecha": fecha,
+        "Evento": evento,
+        "Competición": competicion,
+        "Deporte": deporte,
+        "Tipo de Apuesta": st.session_state["tipo_apuesta"],
+        "Pronósticos": str(pronosticos),
+        "Cuotas Individuales": str(cuotas_individuales),
+        "Cuota Total": cuota_total,
+        "Stake (1-10)": stake,
+        "Stake (€)": stake_estimado,
+        "Resultado": "Pendiente",
+        "Ganancia/Pérdida (€)": 0,
+        "Bank (€)": bank_anterior
+    }
+    df = pd.concat([df, pd.DataFrame([nueva])], ignore_index=True)
+    df.to_csv(DATA_FILE, index=False)
+    st.success("✅ Apuesta registrada correctamente")
+    st.rerun()
