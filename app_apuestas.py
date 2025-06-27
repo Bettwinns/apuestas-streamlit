@@ -194,3 +194,9 @@ else:
                     df_visual.style.applymap(color_estado, subset=["resultado"])
                     .format({"cuota": "{:.2f}"})
                 )
+if row['Resultado'] == "Pendiente":
+    if st.button("🗑️ Eliminar apuesta", key=f"del_{idx}"):
+        df = df.drop(idx)
+        df.to_csv(DATA_FILE, index=False)
+        st.warning("Apuesta eliminada")
+        st.rerun()
